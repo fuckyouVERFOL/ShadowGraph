@@ -7,14 +7,16 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  build:
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: ubuntu-22.04
+            artifact: linux-bundles
             args: --bundles deb,appimage
           - platform: windows-latest
+            artifact: windows-bundles
             args: --bundles nsis
     runs-on: ${{ matrix.platform }}
     steps:
@@ -35,13 +37,30 @@ jobs:
         run: |
           if (-not (Test-Path "src-tauri/icons/icon.ico")) { Get-ChildItem "src-tauri/icons"; exit 1 }
       - uses: tauri-apps/tauri-action@v0
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v__VERSION__
-          releaseName: ShadowGraph v__VERSION__
-          releaseBody: Initial pre-release of ShadowGraph for Windows and Linux.
-          releaseDraft: false
-          prerelease: true
           args: ${{ matrix.args }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: src-tauri/target/release/bundle/**/*
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+      - id: version
+        run: echo "version=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: ShadowGraph v${{ steps.version.outputs.version }}
+          body: Initial pre-release of ShadowGraph for Windows and Linux.
+          prerelease: true
+          draft: false
+          fail_on_unmatched_files: true
+          files: release-assets/**/*
