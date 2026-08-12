@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "ShadowGraph",
+  "version": "0.1.0",
+  "identifier": "io.shadowgraph.osint",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "ShadowGraph — OSINT Graph",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 1080,
+        "minHeight": 700,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Utility",
+    "shortDescription": "Serious OSINT graph workspace",
+    "longDescription": "A focused desktop workspace for connecting entities, sources, and investigative context.",
+    "linux": {
+      "deb": { "depends": [] }
+    },
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper" }
+    }
+  }
+}
