@@ -42,6 +42,8 @@ function App() {
   const [eventsOpen, setEventsOpen] = useState(true);
   const [toast, setToast] = useState('');
   const [isDark, setIsDark] = useState(true);
+  const [screen, setScreen] = useState('home');
+  const [videoEnded, setVideoEnded] = useState(false);
   const selected = nodes.find((node) => node.id === selectedId) || nodes[0];
   const filteredNodes = nodes.filter((node) => `${node.label} ${node.value} ${node.meta}`.toLowerCase().includes(query.toLowerCase()));
 
@@ -73,6 +75,48 @@ function App() {
     setSelectedId('root');
     notify('Узел удалён');
   };
+
+  if (screen === 'home') {
+    return (
+      <div className={`home-screen ${videoEnded ? 'video-ended' : ''}`}>
+        <video className="home-video" autoPlay muted playsInline onEnded={() => setVideoEnded(true)}>
+          <source src="/intro.mp4" type="video/mp4" />
+        </video>
+        <div className="home-video-shade" />
+        <div className="home-content">
+          <div className="home-brand"><div className="brand-mark"><Radar size={22} /></div><span>SHADOWGRAPH</span></div>
+          <div className="home-rule" />
+          <p className="home-kicker">OSINT INVESTIGATION WORKSPACE</p>
+          <h1>Trace what<br />others miss.</h1>
+          <p className="home-description">A focused environment for mapping entities, relationships and evidence.</p>
+          <div className="home-actions">
+            <button className="home-primary" onClick={() => setScreen('graph')}><Plus size={17} /> Create case</button>
+            <button className="home-secondary" onClick={() => setScreen('graph')}><Folder size={16} /> Open case</button>
+          </div>
+          <button className="home-settings" onClick={() => setScreen('settings')}><Settings2 size={15} /> Settings</button>
+        </div>
+        <div className="home-footer"><span>SHADOWGRAPH / PRIVATE INVESTIGATION TOOL</span><span>v0.1.0-alpha</span></div>
+      </div>
+    );
+  }
+
+  if (screen === 'settings') {
+    return (
+      <div className="settings-screen">
+        <header className="settings-header"><button className="settings-brand" onClick={() => setScreen('home')}><div className="brand-mark"><Radar size={18} /></div><span>SHADOWGRAPH</span></button><span className="settings-caption">APPLICATION SETTINGS</span></header>
+        <main className="settings-main">
+          <button className="back-button" onClick={() => setScreen('home')}><ArrowDown size={15} /> Back to start</button>
+          <p className="home-kicker">CONFIGURATION</p>
+          <h1>Settings</h1>
+          <div className="settings-list">
+            <div className="settings-row"><span><strong>Appearance</strong><small>Interface contrast and workspace theme</small></span><button className="settings-control" onClick={() => setIsDark((value) => !value)}>{isDark ? 'Dark' : 'Light'} <CircleDot size={13} /></button></div>
+            <div className="settings-row"><span><strong>Background video</strong><small>Play the intro motion on application launch</small></span><span className="settings-status">Enabled</span></div>
+            <div className="settings-row"><span><strong>Application version</strong><small>ShadowGraph investigation workspace</small></span><span className="settings-status">0.1.0-alpha</span></div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className={`app-shell ${isDark ? '' : 'soft-mode'}`}>
