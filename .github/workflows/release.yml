@@ -15,7 +15,7 @@ jobs:
           - platform: ubuntu-22.04
             args: --bundles deb,appimage
           - platform: windows-latest
-            args: --bundles nsis,msi
+            args: --bundles nsis
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
